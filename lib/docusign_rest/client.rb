@@ -1053,6 +1053,31 @@ module DocusignRest
       generate_log(request, response, uri)
       JSON.parse(response.body)
     end
+ 
+    # Public returns the URL for embedded correcting
+    #
+    # envelope_id - the ID of the envelope you wish to use
+    # return_url  - the URL you want the user to be directed to after he or she
+    #               closes the view
+    # headers     - optional hash of headers to merge into the existing
+    #               required headers for a multipart request.
+    #
+    # Returns the URL string for embedded correcting
+    def get_correct_view(options = {})
+      content_type = { 'Content-Type' => 'application/json' }
+      content_type.merge(options[:headers]) if options[:headers]
+
+      uri = build_uri("/accounts/#{acct_id}/envelopes/#{options[:envelope_id]}/views/correct")
+
+      http = initialize_net_http_ssl(uri)
+
+      request = Net::HTTP::Post.new(uri.request_uri, headers(content_type))
+      request.body = { returnUrl: options[:return_url] }.to_json
+
+      response = http.request(request)
+      generate_log(request, response, uri)
+      JSON.parse(response.body)
+    end
 
     # Public returns the URL for embedded sending
     #
