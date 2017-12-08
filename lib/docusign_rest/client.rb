@@ -1053,7 +1053,7 @@ module DocusignRest
       generate_log(request, response, uri)
       JSON.parse(response.body)
     end
- 
+
     # Public returns the URL for embedded correcting
     #
     # envelope_id - the ID of the envelope you wish to use
@@ -1688,6 +1688,38 @@ module DocusignRest
       request = Net::HTTP::Put.new(uri.request_uri, headers(content_type))
       request.body = post_body
 
+      response = http.request(request)
+      generate_log(request, response, uri)
+      JSON.parse(response.body)
+    end
+
+    def update_recipient_tabs_values(options={})
+      content_type = { "Content-Type" => "application/json" }
+      content_type.merge(options[:headers]) if options[:headers]
+
+      uri = build_uri("/accounts/#{@acct_id}/envelopes/#{options[:envelope_id]}/recipients/#{options[:recipient_id]}/tabs")
+      text_tabs = options[:text_tabs].map do |t|
+        { "tabId" => t[:tab_id], "value" => t[:value] }
+      end
+      post_body = { textTabs: text_tabs }.to_json
+
+      http = initialize_net_http_ssl(uri)
+      request = Net::HTTP::Put.new(uri.request_uri, headers(content_type))
+      request.body = post_body
+
+      response = http.request(request)
+      generate_log(request, response, uri)
+      JSON.parse(response.body)
+    end
+
+    def list_recipient_tabs(options={})
+      content_type = {'Content-Type' => 'application/json'}
+      content_type.merge(options[:headers]) if options[:headers]
+
+      uri = build_uri("/accounts/#{@acct_id}/envelopes/#{options[:envelope_id]}/recipients/#{options[:recipient_id]}/tabs")
+
+      http = initialize_net_http_ssl(uri)
+      request = Net::HTTP::Get.new(uri.request_uri, headers(content_type))
       response = http.request(request)
       generate_log(request, response, uri)
       JSON.parse(response.body)
