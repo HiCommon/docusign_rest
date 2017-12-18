@@ -97,13 +97,13 @@ module DocusignRest
 
       http.use_ssl = uri.scheme == 'https'
 
-      if defined?(Rails) && Rails.env.test?
-        in_rails_test_env = true
+      if defined?(Rails) && (Rails.env.test? || Rails.env.development?)
+        using_sandbox = true
       else
-        in_rails_test_env = false
+        using_sandbox = false
       end
 
-      if http.use_ssl? && !in_rails_test_env
+      if http.use_ssl? && !using_sandbox
         if ca_file
           if File.exists?(ca_file)
             http.ca_file = ca_file
