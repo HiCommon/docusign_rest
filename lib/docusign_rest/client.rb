@@ -1963,6 +1963,49 @@ module DocusignRest
       JSON.parse(response.body)
     end
 
+    # Public: update the expireAfter property of an existing envelope
+    def update_notification_settings(options = {})
+      defaults = {
+        expire_after: "999",
+        expire_enabled: "true",
+        expire_warn: "0"
+      }
+      options = defaults.merge(options)
+
+      content_type = {'Content-Type' => 'application/json'}
+      content_type.merge(options[:headers]) if options[:headers]
+
+      uri = build_uri("/accounts/#{@acct_id}/envelopes/#{options[:envelope_id]}/notification")
+
+      post_body = {
+        expirations: {
+          expireAfter: options[:expire_after].to_s,
+          expireEnabled: options[:expire_enabled].to_s,
+          expireWarn: options[:expire_warn].to_s
+        }
+      }.to_json
+
+      http = initialize_net_http_ssl(uri)
+      request = Net::HTTP::Put.new(uri.request_uri, headers(content_type))
+      request.body = post_body
+
+      response = http.request(request)
+      JSON.parse(response.body)
+    end
+
+    def get_notification_settings(options = {})
+      content_type = {'Content-Type' => 'application/json'}
+      content_type.merge(options[:headers]) if options[:headers]
+
+      uri = build_uri("/accounts/#{@acct_id}/envelopes/#{options[:envelope_id]}/notification")
+
+      http = initialize_net_http_ssl(uri)
+      request = Net::HTTP::Put.new(uri.request_uri, headers(content_type))
+
+      response = http.request(request)
+      JSON.parse(response.body)
+    end
+
     private
 
     # Private: Generates a standardized log of the request and response pair
