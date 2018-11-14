@@ -894,7 +894,14 @@ module DocusignRest
         eventNotification:  get_event_notification(options[:event_notification]),
         templateRoles:      get_template_roles(options[:signers]),
         customFields:       options[:custom_fields],
-        allowReassign:      options[:allow_reassign]
+        allowReassign:      options[:allow_reassign],
+        notification: {
+          expirations: {
+            expireAfter:      options[:expire_after].to_s,
+            expireEnabled:    options[:expire_enabled].to_s,
+            expireWarn:       options[:expire_warn].to_s
+          }
+        }
       }.to_json
 
       uri = build_uri("/accounts/#{acct_id}/envelopes")
